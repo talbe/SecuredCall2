@@ -1,0 +1,19 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.securedcall.MainActivity" >
+
+	<item 
+	    android:id="@+id/mnuSettings"
+	    android:orderInCategory="1"
+	    android:showAsAction="withText"
+	    android:icon="@drawable/ic_action_settings"
+	    android:title="@string/action_settings"/>
+	
+	<!-- TODO: remove this -->
+	<item 
+	    android:id="@+id/mnuTest"
+	    android:orderInCategory="1"
+	    android:showAsAction="never"
+	    android:title="@string/tests_action" />
+	
+</menu>

@@ -1,0 +1,203 @@
+package com.example.securedcall.activities;
+
+import java.util.ArrayList;
+
+import com.example.securedcall.EThreads;
+import com.example.securedcall.Globals;
+import com.example.securedcall.R;
+import com.example.securedcall.general.MessageQueueManagerException;
+import com.example.securedcall.statemachine.ConnectToGwState;
+import com.example.securedcall.statemachine.ConnectToTevetState;
+import com.example.securedcall.statemachine.ContextException;
+import com.example.securedcall.statemachine.SecCallContext;
+import com.example.securedcall.taskcmds.TaskCommand;
+import com.example.securedcall.taskcmds.TaskCommand.ECommands;
+
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.Toast;
+
+public class MainActivity extends FragmentActivity {
+	
+	private static final String LOG_TAG = "MainActivity"; 
+	
+	/**
+	 * The current state context which is used to control the call operation 
+	 */
+	private SecCallContext m_cStateContext;
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+
+		if (savedInstanceState == null) {
+			getSupportFragmentManager().beginTransaction()
+					.add(R.id.container, new PlaceholderFragment()).commit();
+		}
+		
+		init();
+	}
+	
+	@Override
+	public void onResume() {
+		init();
+		super.onResume();
+	}
+
+	public void init() {
+		if (null != m_cStateContext) {
+			return;
+		}
+		
+		// Get the globals instance
+		Globals cGlobals = Globals.getInstance();
+		
+		// Check if one of the important details is missing, open the settings activity
+		int nPhoneNumber = cGlobals.getIntSetting(Globals.PK_PHONE_NUMBER, -1);
+		int nPortNumber = cGlobals.getIntSetting(Globals.PK_GATEWAY_PORT, -1);
+		String strGatewayIp = cGlobals.getStringSetting(Globals.PK_GATEWAY_IP, "");
+		
+		if ((-1 == nPortNumber) ||
+			(-1 == nPhoneNumber) ||
+			("" == strGatewayIp)) {
+			startActivity(new Intent(this, SettingsActivity.class));
+			//Toast.makeText(this, R.string.configuration_required, Toast.LENGTH_LONG).show();
+			
+			// Reload all the settings
+			nPhoneNumber = cGlobals.getIntSetting(Globals.PK_PHONE_NUMBER, -1);
+			nPortNumber = cGlobals.getIntSetting(Globals.PK_GATEWAY_PORT, -1);
+			strGatewayIp = cGlobals.getStringSetting(Globals.PK_GATEWAY_IP, "");
+		} else {
+			try {
+				m_cStateContext = new SecCallContext(new ConnectToTevetState());
+				
+				m_cStateContext.setMsgLogger(new SecCallContext.OnLogMsgHandler() {
+					@Override
+					public void logMsg(String strMsg) {
+						final String msg = strMsg;
+						runOnUiThread(new Runnable() {
+							@SuppressWarnings("unchecked")
+							@Override
+							public void run() {
+								ListView lstLogMsgs = (ListView)findViewById(R.id.lstAppLog);
+								((ArrayAdapter<String>)lstLogMsgs.getAdapter()).add(msg);
+							}
+						});
+					}
+				});
+			} catch (ContextException e) {
+				// Report the error
+				Log.d(LOG_TAG, "Failed to create state context. " + e.getMessage());
+				Toast.makeText(this, R.string.internal_fatal_error, Toast.LENGTH_LONG).show();
+				
+				// Terminate the activity
+				finish();
+			}
+		}
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		if (id == R.id.mnuSettings) {
+			startActivity(new Intent(this, SettingsActivity.class));
+			return true;
+		} else if (id == R.id.mnuTest) {
+			startActivity(new Intent(this, TestActivity.class));
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+
+	/**
+	 * A placeholder fragment containing a simple view.
+	 */
+	public static class PlaceholderFragment extends Fragment {
+
+		public PlaceholderFragment() {
+		}
+
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container,
+				Bundle savedInstanceState) {
+			View rootView = inflater.inflate(R.layout.fragment_main, container,
+					false);
+			ArrayList<String> lstLogMsg = new ArrayList<String>();
+			ArrayAdapter<String> cLogAdapter = new ArrayAdapter<String>(getActivity(), R.layout.log_list_item, lstLogMsg);
+			ListView lstLogMsgs = (ListView)rootView.findViewById(R.id.lstAppLog);
+			lstLogMsgs.setAdapter(cLogAdapter);
+			
+			return rootView;
+		}
+	}
+	
+	private Thread thd;
+	
+	public void onBtnStateStateContextClick(View view) {
+		thd = new Thread(m_cStateContext);
+		thd.start();
+	}
+	
+	public void onBtnCloseAppClick(View view) {
+		thd.interrupt();
+		final ProgressDialog cProgDlg = ProgressDialog.show(this, "", "Closing the app...");
+		
+		Thread t = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					thd.join();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				runOnUiThread(new Runnable() {
+					
+					@Override
+					public void run() {
+						cProgDlg.cancel();
+						finish();
+					}
+				});
+			}
+		});
+		
+		try {
+			Globals.sendMsg(EThreads.GatewayReceiverThread, new TaskCommand(ECommands.StopTask));
+			Globals.sendMsg(EThreads.GatewaySenderThread, new TaskCommand(ECommands.StopTask));
+			Globals.sendMsg(EThreads.TevetBluetoothServer, new TaskCommand(ECommands.StopTask));
+			Globals.sendMsg(EThreads.TevetBluetoothClient, new TaskCommand(ECommands.StopTask));
+		} catch (MessageQueueManagerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		t.start();
+	}
+	
+}

@@ -1,0 +1,142 @@
+package com.example.securedcall.statemachine;
+
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+
+import android.util.Log;
+
+import com.example.securedcall.EThreads;
+import com.example.securedcall.GatewayReceiverThread;
+import com.example.securedcall.Globals;
+import com.example.securedcall.gateway.FromGatewayPacket;
+import com.example.securedcall.gateway.IncomingCallPacket;
+import com.example.securedcall.gateway.ToGatewayPacket;
+import com.example.securedcall.gateway.OpenSessionPacket;
+import com.example.securedcall.taskcmds.SendBluetoothCmd;
+import com.example.securedcall.taskcmds.SendBluetoothCmd.EBTCommands;
+import com.example.securedcall.taskcmds.TaskCommand.ECommands;
+import com.example.securedcall.taskcmds.SendPacketCommand;
+import com.example.securedcall.taskcmds.TaskCommand;
+
+public class DialState extends SecCallState {
+	/**
+	 * A tag used for log cat
+	 */
+	private static final String LOG_TAG = "DialState";
+	
+	/**
+	 * The number of attempts to dial
+	 */
+	private static final int DIAL_ATTEMPTS = 3;
+	
+	/**
+	 * Timeout for a single attempt in mili-seconds
+	 */
+	private static final int DIAL_ATTEMPT_TIMEOUT = 60000;
+	
+	@Override
+	protected StateResult handleState(SecCallContext cCtx) {
+		cCtx.logString("Enter Dial Mode");
+		
+		// A flag which we will use to indicate whether the other mobile available
+		boolean fGotAck = false;
+		boolean fGotSessionStart = false;
+		// Create a semaphore which we will use to wait for responses from the gateway
+		final Semaphore cWaitForRegistrationAckSem = new Semaphore(0);
+		
+		
+		short n = cCtx.getDestenationPhoneNumber();
+		
+		// Prepare a dial request
+		SendPacketCommand cCmd = 
+				new SendPacketCommand(new OpenSessionPacket((short)1234,															
+														   (short)m_cGlobals.getIntSetting(Globals.PK_PHONE_NUMBER, -1)));
+		
+		// Set a receive handler to catch the result
+		cCtx.setReceiveMsgHandler(new GatewayReceiverThread.OnReceiveNewMsgHandler() {
+			
+			@Override
+			public void handlePacket(FromGatewayPacket cPacket) {
+				
+				Globals.DbgLog(LOG_TAG, "Got packet : " + cPacket.getType());
+				
+				// Check whether its receiverAvailable packet
+				if (FromGatewayPacket.MessageType.ReceiverAvailable  == cPacket.getType()) {
+					cWaitForRegistrationAckSem.release();
+					Globals.DbgLog(LOG_TAG, "Got ReceiverAvailable !");
+				}
+				// Check whether its session start packet
+				if (FromGatewayPacket.MessageType.SessionStart  == cPacket.getType()) {
+					Globals.DbgLog(LOG_TAG, "Got SessionStart!");
+					cWaitForRegistrationAckSem.release();
+				}
+			}
+		});
+		
+		// Send the request and wait for the answer
+		for (int nAttempt = 0; !fGotAck && nAttempt < DIAL_ATTEMPTS; nAttempt++) {
+			// Send a request to the gateway
+			sendTaskCmd(cCmd, EThreads.GatewaySenderThread);
+			
+			Globals.DbgLog(LOG_TAG, "Sent start session");
+			
+			try
+			{
+				fGotAck = 
+						cWaitForRegistrationAckSem.tryAcquire(DIAL_ATTEMPT_TIMEOUT,
+															  TimeUnit.MILLISECONDS);
+			} catch (InterruptedException e) {
+				// Clear the receive handler
+				cCtx.setReceiveMsgHandler(null);
+				
+				// Log the error for debug purposes
+				Log.d(LOG_TAG, "Got interrupted while waiting for dial.");
+				
+				// Report the context that we had an error
+				return StateResult.Error;
+			}
+		}
+		
+		Globals.DbgLog(LOG_TAG, "Got " + cWaitForRegistrationAckSem.availablePermits() + " sem permits");
+		
+		if (fGotAck)
+		{
+			cCtx.logString("Got ack ");
+		}
+		
+		// Waiting for session start details
+		for (int nAttempt = 0; !fGotSessionStart && nAttempt < DIAL_ATTEMPTS; nAttempt++) {
+			try
+			{
+				fGotSessionStart = 
+						cWaitForRegistrationAckSem.tryAcquire(DIAL_ATTEMPT_TIMEOUT,
+															  TimeUnit.MILLISECONDS);
+			} catch (InterruptedException e) {
+				// Clear the receive handler
+				cCtx.setReceiveMsgHandler(null);
+				
+				// Log the error for debug purposes
+				Log.d(LOG_TAG, "Got interrupted while waiting for session start");
+				
+				// Report the context that we had an error
+				return StateResult.Error;
+			}
+		}
+				
+		// Clear the receive handler
+		cCtx.setReceiveMsgHandler(null);
+		
+		// Check if we got an ack on the registraion
+		if (!fGotAck) {
+			return StateResult.Error;
+		}
+		
+		cCtx.logString("Got ack on the dial request");
+		sendTaskCmd(new SendBluetoothCmd(EBTCommands.CONNECT), EThreads.TevetBluetoothClient);
+		sendTaskCmd(new TaskCommand(ECommands.EnterDataMode), EThreads.TevetBluetoothClient);
+		cCtx.setState(new ActiveCallState());
+		
+		return StateResult.Working;
+	}
+
+}

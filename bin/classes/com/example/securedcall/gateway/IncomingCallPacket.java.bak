@@ -1,0 +1,27 @@
+package com.example.securedcall.gateway;
+
+public class IncomingCallPacket extends FromGatewayPacket {
+
+	public final int PACKET_SIZE = 2;
+	
+	protected int m_nCallerPhone;
+	protected String m_nDestenationIp;
+	protected String m_nDestenationPort;
+	
+	public IncomingCallPacket() {
+		super(MessageType.IncomingCall);
+	}
+	
+	@Override
+	public int size() {
+		return super.size() + PACKET_SIZE;
+	}
+	
+	public int setDestenationIP() {
+		return super.size() + PACKET_SIZE;
+	}
+	
+	public int setDestenationPort() {
+		return super.size() + PACKET_SIZE;
+	}
+}

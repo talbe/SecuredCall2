@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">SecuredCall</string>
+    <string name="hello_world">שלום עולם!</string>
+    <string name="title_activity_settings">הגדרות</string>
+    <string name="action_settings">הגדרות</string>
+    <string name="status_button_description">מצב המערכת</string>
+    <string name="gateway_port">מספר פורט עבור הרכזת</string>
+    <string name="gateway_port_hint">הפורט הפעיל של הרכזת אליו יש להתחבר</string>
+    <string name="empty_gateway_port">עלייך להזין מספר פורט עבור הרכזת</string>
+    <string name="gateway_port_is_not_a_number">פורט המערכת חייב להיות מספר</string>
+    <string name="gateway_port_is_not_a_valid_port">המספר שהוזן אינו פורט תקין</string>
+    <string name="gateway_ip">IP רכזת</string>
+    <string name="gateway_ip_hint">כתובת האינטרנט של הרכזת</string>
+    <string name="empty_gateway_ip">עלייך להזין כתובת עבור הרכזת</string>
+    <string name="gateway_ip_invalid">הכתובת שהוזנה עבור הרכזת אינה תקנית</string>
+    <string name="phone_number">מספר טלפון</string>
+    <string name="phone_number_hint">המספר שצריך לחייג כדי להגיע אלייך</string>
+    <string name="empty_phone_number">עלייך להזין מספר טלפון</string>
+    <string name="phone_number_is_not_a_number">מספר הטלפון חייב להיות ערך מספרי</string>
+    <string name="phone_number_is_not_valid">מספר הטלפון שהוזן אינו תקין</string>
+    <string name="developers_options">הצג מידע למפתחים</string>
+    <string name="settings_info">במסך ההגדרות של האפליקציה תוכל לקבוע את ההגדרות השונות הנדרשות עבור תפעול האפליקציה השוטף.</string>
+    <string name="save">שמור</string>
+    <string name="the_settings_were_saved">ההגדרות החדשות נשמרו בהצלחה</string>
+    <string name="title_activity_test">TestActivity</string>
+    <string name="tests_action">מצב בדיקות</string>
+    <string name="gateway_details_missing">עלייך להגדיר את מאפייני הרכזת במסך ההגדרות</string>
+    <string name="gateway_socket_creation_failed">יצירת חיבור רשת לרכזת נכשל</string>
+    <string name="gateway_host_unknown">אין אפשרות לזהות את כתובת הרכזת</string>
+    <string name="test_registration">בדוק הודעת הרשמה</string>
+    <string name="test_keep_alive">בדוק הודעת סטאטוס מחזורית</string>
+    <string name="test_remove_me">בדוק הודעת הסרה עצמית</string>
+    <string name="test_ask_for_session">בדוק הודעת בקשה לשיחה</string>
+    <string name="test_tevet">בדוק הודעת נתונים</string>
+    <string name="test_end_call">בדוק הודעת סיום שיחה</string>
+    <string name="test_accept_call">בדוק הודעת קבל שיחה</string>
+    <string name="test_decline_call">בדוק הודעת סנן שיחה</string>
+    <string name="initialization_in_progress">מבצע אתחול&#8230;</string>
+    <string name="failed_to_send_mq_message">שליחת הודעה פנימית נכשלה</string>
+    <string name="operation_in_progress">התהליך המבוקש מתבצע כרגע</string>
+    <string name="already_connected_to_gateway">קיים כבר חיבור פעיל לרכזת. וודא שסגרת את כל החיבורים הפעילים ונסה לבצע פעולה זאת שוב</string>
+	<string name="internal_fatal_error">שגיאה פנימית הביאה לעצירת המערכת. נשמח אם תוכל להסביר לאחד מאנשי הצוות כיצד לשחזר את התופעה</string>
+	<string name="configuration_required">בכדי להשתמש באפליקציה עלייך לקבוע את ערכי הגדרות הבסיס</string>
+	<string name="press_to_start">לחץ על הכפתור כדי להתחיל את ההתקשרות</string>
+	<string name="waiting_for_calls">מוכן לקבלת שיחות</string>
+	<string name="connecting_to_tevet">מתחבר לטבת</string>
+	<string name="connecting_to_sever">מתחבר לשרת</string>
+	<string name="enable_peer_to_peer">אפשר חיבור ישיר</string>
+</resources>

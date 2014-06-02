@@ -1,0 +1,38 @@
+package com.example.securedcall.statemachine;
+
+import com.example.securedcall.EThreads;
+import com.example.securedcall.Globals;
+import com.example.securedcall.general.MessageQueueManagerException;
+import com.example.securedcall.taskcmds.TaskCommand;
+import com.example.securedcall.taskcmds.TaskCommand.ECommands;
+
+public class ConnectToTevetState extends SecCallState {
+
+	private boolean m_fStarted = false;
+	
+	@Override
+	protected StateResult handleState(SecCallContext cCtx) {
+		cCtx.logString("Got to ConnectToTevetState");
+		
+		if (!m_fStarted)
+		{
+			try {
+				Globals.sendMsg(EThreads.TevetBluetoothServer, new TaskCommand(ECommands.WaitForBtClients));
+			} catch (MessageQueueManagerException e1) {
+				Globals.DbgLog("ConnectToTevet", "Failed to send cyclic wait for clients request");
+			}
+			
+			m_fStarted = true;
+		}
+		
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//cCtx.setState(new WaitForCallState());
+		return StateResult.Working;
+	}
+
+}

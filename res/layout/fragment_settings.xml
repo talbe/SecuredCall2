@@ -1,0 +1,113 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.securedcall.SettingsActivity$PlaceholderFragment"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/lblSettingInfo"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/settings_info"
+        android:layout_marginBottom="10dp"
+        android:gravity="right"/>
+    
+    <TextView
+        android:id="@+id/lblPhoneNumber"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/phone_number"
+        android:gravity="right" />
+    
+    <EditText
+        android:id="@+id/txtPhoneNumber"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+ 		android:hint="@string/phone_number_hint"
+ 		style="@style/settingsField"
+ 		android:inputType="phone"
+ 		android:gravity="right"/>
+	
+   	<TextView
+        android:id="@+id/lblGatewayIp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/gateway_ip"
+        android:gravity="right" />
+    
+    <EditText
+        android:id="@+id/txtGatewayIp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+ 		android:hint="@string/gateway_ip_hint"
+ 		style="@style/settingsField"
+ 		android:inputType="phone|number"
+ 		android:gravity="right"/>
+	
+    <TextView
+        android:id="@+id/lblGatewayPort"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/gateway_port"
+        android:gravity="right" />
+    
+    <EditText
+        android:id="@+id/txtGatewayPort"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+ 		android:hint="@string/gateway_port_hint"
+ 		style="@style/settingsField"
+ 		android:inputType="number"
+ 		android:gravity="right" />
+	
+    <RelativeLayout 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+    	<CheckBox 
+	        android:id="@+id/chkM2MMode"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginLeft="5dp"
+	        android:layout_alignParentRight="true" />
+    	<TextView
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_toLeftOf="@+id/chkM2MMode"
+    	    android:layout_alignBaseline="@+id/chkM2MMode"
+    	    android:text="@string/enable_peer_to_peer" />
+
+    	<Button
+    	    android:id="@+id/btnSaveSettings"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_alignParentLeft="true"
+    	    android:layout_alignParentTop="true"
+    	    android:layout_marginLeft="16dp"
+    	    android:onClick="onSaveBtnClick"
+    	    android:text="@string/save" />
+    
+    </RelativeLayout>
+    
+    <RelativeLayout 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+    	<CheckBox 
+	        android:id="@+id/chkDeveloperOptions"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginLeft="5dp"
+	        android:layout_alignParentRight="true" />
+    	<TextView
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_toLeftOf="@+id/chkDeveloperOptions"
+    	    android:layout_alignBaseline="@+id/chkDeveloperOptions"
+    	    android:text="@string/developers_options" />    
+    </RelativeLayout>
+    
+</LinearLayout>

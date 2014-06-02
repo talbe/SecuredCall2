@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <declare-styleable name="StatusButton">
+        <attr name="offText" format="string" />
+        <attr name="onText" format="string" />
+    </declare-styleable>
+
+</resources> 

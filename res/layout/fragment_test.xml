@@ -1,0 +1,98 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.securedcall.TestActivity$PlaceholderFragment"
+    android:orientation="vertical">
+	
+    <RelativeLayout 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+	    <TextView
+	        android:id="@+id/lblGatewayIp"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/gateway_ip"
+	        android:layout_alignParentRight="true" />
+	    <TextView
+	        android:id="@+id/lblGatewayIpAddr"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:gravity="left"
+	        android:layout_toLeftOf="@+id/lblGatewayIp" />
+    </RelativeLayout>
+    <RelativeLayout 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+	    <TextView
+	        android:id="@+id/lblGatewayPort"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/gateway_port"
+	        android:layout_alignParentRight="true" />
+	    <TextView
+	        android:id="@+id/lblGatewayPortNumber"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:gravity="left"
+	        android:layout_toLeftOf="@+id/lblGatewayPort" />
+    </RelativeLayout>
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp" 
+        android:background="#000000"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"/>
+	<Button
+	    android:id="@+id/btnTestRegistration"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:text="@string/test_registration"
+	    android:onClick="onBtnTestRegistrationClick" />
+	<Button
+	    android:id="@+id/btnTestKeepAlive"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:text="@string/test_keep_alive"
+	    android:onClick="onBtnTestKeepAliveClick" />
+	<Button
+	    android:id="@+id/btnTestRemoveMe"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:text="@string/test_remove_me"
+	    android:onClick="onBtnTestRemoveMeClick" />
+	<Button
+	    android:id="@+id/btnTestAskForSession"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:text="@string/test_ask_for_session"
+	    android:onClick="onBtnTestAskForSessionClick" />
+	<Button
+	    android:id="@+id/btnTestTevet"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:text="@string/test_tevet"
+	    android:onClick="onBtnTestTevetClick" />
+	<Button
+	    android:id="@+id/btnTestEndCall"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:text="@string/test_end_call"
+	    android:onClick="onBtnTestEndCallClick" />
+	<Button
+	    android:id="@+id/btnTestAcceptCall"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:text="@string/test_accept_call"
+	    android:onClick="onBtnTestAcceptCallClick" />
+	<Button
+	    android:id="@+id/btnTestDeclineCall"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:text="@string/test_decline_call"
+	    android:onClick="onBtnTestDeclineCallClick" />
+</LinearLayout>

@@ -1,0 +1,135 @@
+package com.example.securedcall.gateway;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.util.Hashtable;
+
+import com.example.securedcall.Globals;
+import com.example.securedcall.gateway.FromGatewayPacket.MessageType;
+import com.example.securedcall.general.Utils;
+
+public class GatewayPacketReceiver {
+	
+	public static final String LOG_TAG = "GatewayPacketReceiver";
+	
+	/**
+	 * The full size of a single packet in bytes.
+	 */
+	private static final int FULL_PACKET_SIZE = 37; 
+	
+	/**
+	 * A byte to use for padding the packet to full size
+	 */
+	private static final byte PACKET_EMPTY_BYTE = 0;
+	
+	/**
+	 * A socket which is used to send the outgoing packets
+	 */
+	private DatagramSocket m_cSocket;
+	
+	/**
+	 * A collection of prototypes used to create new incoming packets
+	 */
+	private Hashtable<FromGatewayPacket.MessageType, FromGatewayPacket> m_tblPrototypes;
+	
+	/**
+	 * Ctor, initialize data members.
+	 * 
+	 * @param cSocket	The socket which will be used by the sender to send
+	 * 					packets.
+	 */
+	public GatewayPacketReceiver(DatagramSocket cSocket) {
+		m_cSocket = cSocket;
+		
+		// Initialize our prototypes table
+		m_tblPrototypes = new Hashtable<FromGatewayPacket.MessageType, FromGatewayPacket>();
+		m_tblPrototypes.put(MessageType.SubscriberAlreadyExists,
+							new FromGatewayPacket(MessageType.SubscriberAlreadyExists));
+		m_tblPrototypes.put(MessageType.ReceiverAvailable,
+							new FromGatewayPacket(MessageType.ReceiverAvailable));
+		m_tblPrototypes.put(MessageType.ReceiverNotExist,
+							new FromGatewayPacket(MessageType.ReceiverNotExist));
+		m_tblPrototypes.put(MessageType.ReceiverBusy,
+							new FromGatewayPacket(MessageType.ReceiverBusy));
+		m_tblPrototypes.put(MessageType.ReceiverDeclineTheSession,
+							new FromGatewayPacket(MessageType.ReceiverDeclineTheSession));
+		m_tblPrototypes.put(MessageType.IncomingCall, new IncomingCallPacket());
+		m_tblPrototypes.put(MessageType.SessionStart,
+							new FromGatewayPacket(MessageType.SessionStart));
+		m_tblPrototypes.put(MessageType.SessionClosed,
+							new FromGatewayPacket(MessageType.SessionClosed));
+		m_tblPrototypes.put(MessageType.Tevet,
+							new FromGatewayPacket(MessageType.Tevet));
+		m_tblPrototypes.put(MessageType.RegisterAgain,
+							new FromGatewayPacket(MessageType.RegisterAgain));
+		m_tblPrototypes.put(MessageType.AckRegisterMsg,
+							new FromGatewayPacket(MessageType.AckRegisterMsg));
+	}
+	
+	/**
+	 * Terminate the sender.
+	 * Note that after this method is called you shouldn't use this instance anymore.
+	 */
+	public void close() {
+		m_cSocket.close();
+	}
+	
+	/**
+	 * Received a packet from the gateway
+	 * 
+	 * @return the received packet or null
+	 * @throws IOException If some error will occur
+	 */
+	public FromGatewayPacket receivePacket() throws IOException {
+		// Allocate a buffer to which the packet will be written
+		byte arRawBuff[] = new byte[FULL_PACKET_SIZE];
+		ByteArrayInputStream cInStream = new ByteArrayInputStream(arRawBuff);
+		Globals.DbgLog(LOG_TAG, "Waiting for packets...");
+		
+		// Read a packet
+		DatagramPacket cIncommingPacket = new DatagramPacket(arRawBuff, arRawBuff.length);
+		m_cSocket.receive(cIncommingPacket);
+		
+		Globals.DbgLog(LOG_TAG, "Got message: " + Utils.bytesToHex(arRawBuff));
+		
+		// Read the type from the buffer
+		MessageType eType;
+		try {
+			eType = MessageType.fromByte(arRawBuff[0]);
+		} catch (IllegalArgumentException e) {
+			throw new IOException("Got unexpected data type! " + arRawBuff[0]);
+		}
+		
+		// See if we have a prototype that matches this type
+		FromGatewayPacket cPacket = m_tblPrototypes.get(eType);
+		if (null != cPacket) {
+			try {
+				cPacket = (FromGatewayPacket)cPacket.clone();
+				cPacket.deserialize(cInStream);
+				
+				// Calculate the number of extra bytes to write
+				int nExtraBytes = FULL_PACKET_SIZE - cPacket.size();
+				
+				
+				// Make sure that the rest of the packet is padded with empty bytes
+				for (int nByteIndex = 0; nByteIndex > nExtraBytes; nByteIndex++) {
+					if (PACKET_EMPTY_BYTE != cInStream.read()) {
+						throw new IOException("The padding of the message is invalid!");
+					}
+				}
+			} catch(CloneNotSupportedException e) {
+				cPacket = null;
+			}
+		}
+		
+		if (null == cPacket) {
+			Globals.DbgLog(LOG_TAG, "Got an invalid message! " + arRawBuff[0]);
+		} else {
+			Globals.DbgLog(LOG_TAG, "Got valid message from server! " + eType);
+		}
+		
+		return cPacket;
+	}
+}
