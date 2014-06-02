@@ -22,7 +22,7 @@ import com.example.securedcall.tevet.TevetStatusDTO;
 public class ActiveCallState extends SecCallState implements OnReceiveNewMsgHandler, IObserver {
 
 	private static final String LOG_TAG = "ActiveCallState";
-	//Active!
+	//Active! frosadsafndskjfnsdkjnsdkjnkjds
 	private Semaphore m_semEndCall;
 	private MobileSenderThread m_thrdMobileSender;
 	
