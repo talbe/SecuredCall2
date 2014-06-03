@@ -17,11 +17,11 @@ public class FromGatewayPacket implements IGatewayPacket {
 		ReceiverAvailable,
 		ReceiverNotExist,
 		ReceiverBusy,
-		ReceiverDeclineTheSession,
+		Tevet,
 		IncomingCall,
 		SessionStart,
 		SessionClosed,
-		Tevet,
+		ReceiverDeclineTheSession,
 		RegisterAgain,
 		AckRegisterMsg;
 		
