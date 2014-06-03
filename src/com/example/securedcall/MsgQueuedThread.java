@@ -92,8 +92,7 @@ public abstract class MsgQueuedThread extends ObservedThread {
 		
 		while (!m_fShouldStop) {
 			try {
-				Globals.DbgLog("MsgQuedThread", "MsgQuedThread:: enter while");
-				
+								
 				// Read the next message from the queue
 				cCmd = m_cQueueMgr.readMessage(cKey);
 				

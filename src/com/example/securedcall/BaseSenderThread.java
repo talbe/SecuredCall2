@@ -108,7 +108,7 @@ public abstract class BaseSenderThread extends MsgQueuedThread {
 		@Override
 		public void handleCommand(TaskCommand cCmd) {
 			try {
-				Globals.DbgLog("BaseSenderThread", "BaseSenderThread:: send buffer to...");
+				
 				// Send the packet
 				m_cSender.sendPacket(((SendPacketCommand)cCmd).Packet);
 				
