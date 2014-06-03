@@ -66,6 +66,7 @@ public abstract class BaseSenderThread extends MsgQueuedThread {
 			// Connect the socket to our sender
 			m_cSender = new GatewayPacketSender(m_cSocket);
 		} catch (UnknownHostException e) {
+			
 			m_nErrorMsg = R.string.gateway_host_unknown;
 		} catch (IOException e) {
 			m_nErrorMsg = R.string.gateway_socket_creation_failed;
@@ -107,6 +108,7 @@ public abstract class BaseSenderThread extends MsgQueuedThread {
 		@Override
 		public void handleCommand(TaskCommand cCmd) {
 			try {
+				Globals.DbgLog("BaseSenderThread", "BaseSenderThread:: send buffer to...");
 				// Send the packet
 				m_cSender.sendPacket(((SendPacketCommand)cCmd).Packet);
 				

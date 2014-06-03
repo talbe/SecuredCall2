@@ -8,7 +8,7 @@ public class MobileSenderThread extends BaseSenderThread{
 	public MobileSenderThread(MessageQueueManager<EThreads, TaskCommand> cQueueMgr,
 			   String strIp,
 			   int nPort) {
-		super(cQueueMgr, strIp, nPort);
+		super(cQueueMgr, strIp.substring(1), nPort);
 	}
 	
 	@Override

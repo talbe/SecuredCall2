@@ -51,7 +51,7 @@ public class ActiveCallState extends SecCallState implements OnReceiveNewMsgHand
 								" port - " + cSession.getCallerPort());
 		
 		// Check if the caller is connected to us directly
-		if ((!(cSession.getCallerIp().toString().equals("/" + m_cGlobals.getStringSetting(Globals.PK_GATEWAY_IP, "")))) || 
+		if ((!(cSession.getCallerIp().toString().equals(m_cGlobals.getStringSetting(Globals.PK_GATEWAY_IP, "")))) || 
 			(cSession.getCallerPort() != (short)m_cGlobals.getIntSetting(Globals.PK_GATEWAY_PORT, -1))) {
 			Globals.DbgLog(LOG_TAG, "Got call with M2M device!");
 			
@@ -133,8 +133,10 @@ public class ActiveCallState extends SecCallState implements OnReceiveNewMsgHand
 				SendPacketCommand cSendCmd = new SendPacketCommand(cPacket);
 				
 				if (null == m_thrdMobileSender) {
+					Globals.DbgLog(LOG_TAG, "Active-CallState:: m_thrdMobileSender == null");
 					sendTaskCmd(cSendCmd, EThreads.GatewaySenderThread);
 				} else {
+					Globals.DbgLog(LOG_TAG, "Active-CallState:: m_thrdMobileSender != null");
 					sendTaskCmd(cSendCmd, EThreads.MobileSenderThread);
 				}
 				break;
