@@ -14,6 +14,8 @@ public class ATHangCmd implements IATCommandHandler {
 		return strCmd.matches(CMD_PATTERN);
 	}
 	
+	
+	// TODO: Check if reach here, uncomment the code!!
 	public Object handleCmd(String strCmd, ATConnection cConnection)
 	{
 		Globals.DbgLog("ATHangCmd", "Got hang command");
