@@ -90,6 +90,8 @@ public class ActiveCallState extends SecCallState implements OnReceiveNewMsgHand
 			}
 		}
 		
+		//cCtx.setState(new WaitForCallState());
+		
 		return eResult;
 	}
 

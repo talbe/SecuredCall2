@@ -22,6 +22,7 @@ import com.example.securedcall.taskcmds.TaskCommand.ECommands;
 import com.example.securedcall.tevet.TevetStatusDTO.TevetStatusOpcode;
 import com.example.securedcall.tevet.atcmds.ATAnswerCmd;
 import com.example.securedcall.tevet.atcmds.ATDialCmd;
+import com.example.securedcall.tevet.atcmds.ATHangCmd;
 import com.example.securedcall.tevet.atcmds.ATSetRegisterCmd;
 import com.example.securedcall.tevet.atcmds.ATSmartModemCmd;
 import com.example.securedcall.tevet.atcmds.IATCommandHandler;
@@ -71,7 +72,7 @@ public class TevetClientHandler extends MsgQueuedThread {
 		m_arHandlers.add(new ATDialCmd());
 		m_arHandlers.add(new ATAnswerCmd());
 		m_arHandlers.add(new ATSmartModemCmd());
-		
+		m_arHandlers.add(new ATHangCmd());
 		setPriority(MAX_PRIORITY);
 		
 	}
