@@ -21,6 +21,20 @@ import java.util.Locale;
  * @since 18/05/2014
  */
 public class Utils {
+	
+	private static boolean isSessionM2M = false;
+	
+	public static boolean IsSessionM2M()
+	{
+		return isSessionM2M;
+	}
+	
+	public static void setM2M(boolean isM2M)
+	{
+		isSessionM2M = isM2M;
+	}
+	
+	
 	/**
 	 * Check if a given string is a valid IPv4 address
 	 * 

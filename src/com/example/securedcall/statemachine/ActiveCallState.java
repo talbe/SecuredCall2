@@ -22,7 +22,6 @@ import com.example.securedcall.tevet.TevetStatusDTO;
 public class ActiveCallState extends SecCallState implements OnReceiveNewMsgHandler, IObserver {
 
 	private static final String LOG_TAG = "ActiveCallState";
-	//Active! frosadsafndskjfnsdkjnsdkjnkjds
 	private Semaphore m_semEndCall;
 	private MobileSenderThread m_thrdMobileSender;
 	
@@ -55,11 +54,16 @@ public class ActiveCallState extends SecCallState implements OnReceiveNewMsgHand
 			(cSession.getCallerPort() != (short)m_cGlobals.getIntSetting(Globals.PK_GATEWAY_PORT, -1))) {
 			Globals.DbgLog(LOG_TAG, "Got call with M2M device!");
 			
+			Utils.setM2M(true);
 			// Create a thread which we will use to send data to the other end
 			m_thrdMobileSender = new MobileSenderThread(m_cGlobals.getMQ(),
 														cSession.getCallerIp().toString(),
 														cSession.getCallerPort());
 			m_thrdMobileSender.start();
+		}
+		else
+		{
+			Utils.setM2M(false);
 		}
 		
 		cCtx.setReceiveMsgHandler(this);

@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import com.example.securedcall.gateway.ToGatewayPacket.MessageType;
 import com.example.securedcall.general.Utils;
 
 public class TevetRxPacket extends FromGatewayPacket {
@@ -72,18 +73,56 @@ public class TevetRxPacket extends FromGatewayPacket {
 	 * @throws IllegalArgumentException	If the buffer contains malformed information
 	 */
 	public void deserialize(InputStream cInStream) throws IOException, IllegalArgumentException {
-		super.deserialize(cInStream);
+		if (Utils.IsSessionM2M())
+		{
+			// Read the wanted buffer from the stream
+			ByteBuffer cRawBuffer = Utils.readByteBuffer(cInStream, 38);
+			cRawBuffer.order(ByteOrder.BIG_ENDIAN);
+			
+			// Read all the members from the buffer
+			byte nType = cRawBuffer.get();
+			m_nSyncNum = cRawBuffer.getShort();
+			cRawBuffer.getShort(); //m_nSrcPhone
+			cRawBuffer.getShort(); //m_nSrcPort 
+			m_nDataSize = cRawBuffer.get();
+			
+			// Make sure that the type is valid
+			try {
+				m_eType = MessageType.fromByte(nType);
+			} catch (IllegalArgumentException e) {
+				throw new IllegalArgumentException("The provided buffer contained an invalid message type " + nType);
+			}
+			
+			// Make sure that the data size is valid
+			//if (size() != m_nDataSize) {
+			//	throw new IllegalArgumentException("The provided data size is invalid! expected: " + size() + " got: " + m_nDataSize);
+			//}
+			
+			// Read the wanted buffer from the stream
+			//ByteBuffer cRawBuffer = Utils.readByteBuffer(cInStream, PACKET_SIZE);
+			//cRawBuffer.order(ByteOrder.BIG_ENDIAN);
+			
+			// Read all the members from the buffer
+			cRawBuffer.getShort(); // m_nDestPhone 
+			cRawBuffer.get(); // m_nM2M 
+			m_arData = new byte[DATA_SIZE];
+			cRawBuffer.get(m_arData);
+		}
+		else
+		{
+			super.deserialize(cInStream);
 		
-		// Read the wanted buffer from the stream
-		ByteBuffer cRawBuffer = Utils.readByteBuffer(cInStream, PACKET_SIZE);
-		cRawBuffer.order(ByteOrder.BIG_ENDIAN);
-		
-		// Read all the members from the buffer
-		m_nCallerPhone = cRawBuffer.getShort();
-		m_nDestIp = cRawBuffer.getInt();
-		m_nDestPort = cRawBuffer.getShort();
-		m_arData = new byte[DATA_SIZE];
-		cRawBuffer.get(m_arData);
+			// Read the wanted buffer from the stream
+			ByteBuffer cRawBuffer = Utils.readByteBuffer(cInStream, PACKET_SIZE);
+			cRawBuffer.order(ByteOrder.BIG_ENDIAN);
+			
+			// Read all the members from the buffer
+			m_nCallerPhone = cRawBuffer.getShort();
+			m_nDestIp = cRawBuffer.getInt();
+			m_nDestPort = cRawBuffer.getShort();
+			m_arData = new byte[DATA_SIZE];
+			cRawBuffer.get(m_arData);
+		}
 	}
 
 
