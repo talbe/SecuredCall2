@@ -90,7 +90,7 @@ public class ActiveCallState extends SecCallState implements OnReceiveNewMsgHand
 			}
 		}
 		
-		//cCtx.setState(new WaitForCallState());
+		cCtx.setState(new WaitForCallState());
 		
 		return eResult;
 	}
@@ -110,7 +110,9 @@ public class ActiveCallState extends SecCallState implements OnReceiveNewMsgHand
 				
 				break;
 			}
-			
+			case SessionClosed:
+				m_semEndCall.release();
+				
 			default:
 			{
 				Globals.DbgLog(LOG_TAG, "Got an unexpected message in active call! " + cPacket.getType());

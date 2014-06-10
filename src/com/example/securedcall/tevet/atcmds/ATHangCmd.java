@@ -13,7 +13,7 @@ public class ATHangCmd implements IATCommandHandler {
 	/**
 	 * Regex pattern used to identify set register commands
 	 */
-	public static final String CMD_PATTERN = "^ATH$";
+	public static final String CMD_PATTERN = "/ATH";
 	
 	public boolean canHandleCmd(String strCmd)
 	{
